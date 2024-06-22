@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit - <%= book.name %></title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://fonts.cdnfonts.com/css/avenir-lt-pro" rel="stylesheet">
+</head>
+<body class="gradient-background">
+    <header>
+        <a href="https://openlibrary.org/" target="_blank"><img height="25" width="100" src="https://openlibrary.org/static/images/openlibrary-logo-tighter.svg"></a>
+        <h1>bookNotes</h1>
+    </header>
+    <main>
+        <h2>Edit Book</h2>
+        <div class="form-box">
+            <form action="/update" id="form" class="form" method="POST">
+                <input type="hidden" name="id" value="<%= book.id %>">
+                <div class="book-info">
+                    <div class="form-item">
+                        <label for="isbn">ISBN 13: * </label>
+                        <input type="number" name="isbn" minlength="13" maxlength="13" value="<%= book.isbn %>" style="color: gray;" readonly>
+                    </div>
+                    <div class="form-item">
+                        <label for="name">Name: </label>
+                        <input type="text" name="name" value="<%= book.name %>" style="color: gray;" readonly>
+                    </div>
+                    <div class="form-item">
+                        <label for="author">Author: </label>
+                        <input type="text" name="author" value="<%= book.author %>" style="color: gray;" readonly>
+                    </div>
+                </div>
+                <div class="date-rate">
+                    <div class="form-item">
+                        <label for="date">Date Read: </label>
+                        <input type="date" name="date" value="<%= date %>" required>
+                    </div>
+                    <div class="form-item">
+                        <label for="rate">Rate: </label>
+                        <input type="number" name="rate" min="1" max="10" value="<%= book.rate %>" required>
+                    </div>
+                    <div class="form-item btn-box">
+                        <button type="submit" class="form-submit">Update</button>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label for="notes">Notes: </label>
+                    <textarea name="notes" rows="6" cols="50" required ><%= book.note %></textarea>
+                    <form action="/back" id="cancel" class="back" method="GET">
+                        <button type="submit" class="back" id="cancel"><span style="font-size: larger;">☒</span> Cancel</button>
+                    </form>
+                </div>
+            </form>
+        </div>
+    </main>
+    <footer>
+        <p>© <%= new Date().getFullYear() %> Salim Kılınç</p>
+    </footer>
+</body>
+</html>

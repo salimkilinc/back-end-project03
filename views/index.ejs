@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Notes</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://fonts.cdnfonts.com/css/avenir-lt-pro" rel="stylesheet">
+</head>
+<body class="gradient-background">
+    <header>
+        <a href="https://openlibrary.org/" target="_blank"><img height="25" width="100" src="https://openlibrary.org/static/images/openlibrary-logo-tighter.svg"></a>
+        <h1>bookNotes</h1>
+    </header>
+    <main>
+        <div class="form-box">
+            <form action="/add" id="form" class="form" method="POST">
+                <div class="book-info">
+                    <div class="form-item">
+                        <label for="isbn">ISBN 13: * </label>
+                        <input type="number" name="isbn" minlength="13" maxlength="13" placeholder="9781449480479" required >
+                    </div>
+                    <div class="form-item">
+                        <label for="name">Name: </label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="form-item">
+                        <label for="author">Author: </label>
+                        <input type="text" name="author" required>
+                    </div>
+                </div>
+                <div class="date-rate">
+                    <div class="form-item">
+                        <label for="date">Date Read: </label>
+                        <input type="date" name="date" value="<%= today %>" required>
+                    </div>
+                    <div class="form-item">
+                        <label for="rate">Rate: </label>
+                        <input type="number" name="rate" min="1" max="10" required>
+                    </div>
+                    <div class="form-item btn-box">
+                        <button type="submit" class="form-submit">Add</button>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label for="notes">Notes: </label>
+                    <textarea name="notes" rows="6" cols="50" required ></textarea>
+                    <p class="star">* ISBN 13 is required for book covers to be displayed. You can find it on <a class="external-link" href="https://openlibrary.org/" target="_blank">Open Library</a> by searching the book. Or you can type `1111111111111` to display the defult book cover.</p>
+                </div>
+            </form>
+        </div>
+        <div class="sort-button-box">
+            <a href="/?sortBy=rate&order=DESC"><button class="sort">Sort by Rate Descending</button></a>
+            <a href="/?sortBy=rate&order=ASC"><button class="sort">Sort by Rate Ascending</button></a>
+            <a href="/?sortBy=date&order=DESC"><button class="sort">Sort by Recency Descending</button></a>
+            <a href="/?sortBy=date&order=ASC"><button class="sort">Sort by Recency Ascending</button></a>
+        </div>
+        <div class="book-list">
+            <% books.forEach(book => { %>
+                <div class="book-list-item">
+                    <div class="book-cover">
+                        <img src="<%= book.img_url %>" style="border-radius: 16px;" height="200" width="150" alt="Cover of <%= book.name %>">
+                    </div>
+                    <div class="other-info">
+                        <h2><%= book.name %> by <%= book.author %></h2>
+                        <h4>Date Read: <%= book.date.getFullYear() %>-<%= book.date.getMonth() + 1 %>-<%= book.date.getDate() %> --- Rate: <%= book.rate %>/10</h4>
+                        <% function sliceFirstParagraph(note) {
+                            const paragraphEnd = note.indexOf('\n\n');
+                            if (paragraphEnd !== -1) {
+                                return note.slice(0, paragraphEnd);
+                            } else {
+                                const singleNewlineIndex = note.indexOf('\n');
+                                if (singleNewlineIndex !== -1) {
+                                    return note.slice(0, singleNewlineIndex);
+                                } else {
+                                    return note;
+                                }
+                            }
+                        } %>
+                        <p><%= sliceFirstParagraph(book.note) %></p>
+                        <div class="book-buttons">
+                            <form action="/book" id="book" class="book" method="GET">
+                                <input type="hidden" name="id" value="<%= book.id %>">
+                                <button type="submit" class="form-submit">Read More</button>
+                            </form>
+                            <form action="/edit" id="edit" class="edit" method="GET">
+                                <input type="hidden" name="id" value="<%= book.id %>">
+                                <button type="submit" class="form-submit">Edit</button>
+                            </form>
+                            <form action="/delete" id="delete" class="delete" method="GET">
+                                <input type="hidden" name="id" value="<%= book.id %>">
+                                <button type="submit" class="form-submit">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+        <button onclick="topFunction()" id="top" title="Go to top">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-up" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708z"/>
+            </svg>
+        </button>
+    </main>
+    <footer>
+        <p>© <%= new Date().getFullYear() %> Salim Kılınç</p>
+    </footer>
+    <script>
+        let mybutton = document.getElementById("top");
+        window.onscroll = function() {scrollFunction()};
+    
+        function scrollFunction() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                mybutton.style.display = "block";
+            } else {
+                mybutton.style.display = "none";
+            }
+        }
+    
+        function topFunction() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+    </script>
+</body>
+</html>
