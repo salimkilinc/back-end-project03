@@ -13,7 +13,7 @@ const db = new pg.Client({
     password: "B06JKxL47gLUOYSzof5xqKe29XgMaHfl",
     port: 5432,
     ssl: {
-    rejectUnauthorized: false, // Necessary for certain cloud providers
+    rejectUnauthorized: false,
     }
   });
   db.connect();
