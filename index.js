@@ -7,11 +7,14 @@ const app = express();
 const port = 3000;
 
 const db = new pg.Client({
-    user: "postgres",
-    host: "localhost",
-    database: "booknotes",
-    password: "336991",
+    user: "renderpostgres",
+    host: "dpg-cqgl8ehu0jms73dougq0-a",
+    database: "booknotes_h5nz",
+    password: "B06JKxL47gLUOYSzof5xqKe29XgMaHfl",
     port: 5432,
+    ssl: {
+    rejectUnauthorized: false, // Necessary for certain cloud providers
+    }
   });
   db.connect();
 
