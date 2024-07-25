@@ -1,22 +1,16 @@
 import express, { urlencoded } from "express";
 import bodyParser from "body-parser";
 import axios from "axios";
-import pg from "pg";
+import pkg from "pg";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 const port = 3000;
 
-const db = new pg.Client({
-    user: "renderpostgres",
-    host: "dpg-cqgl8ehu0jms73dougq0-a",
-    database: "booknotes_h5nz",
-    password: "B06JKxL47gLUOYSzof5xqKe29XgMaHfl",
-    port: 5432,
-    ssl: {
-    rejectUnauthorized: false,
-    }
-  });
-  db.connect();
+const { Pool } = pkg;
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
@@ -55,7 +49,7 @@ app.get("/", async (req, res) => {
     `;
 
     try {
-        const result = await db.query(query);
+        const result = await pool.query(query);
         const books = result.rows;
         res.render("index.ejs", { books: books, today: dateString});
     } catch (error) {
@@ -84,16 +78,16 @@ app.post("/add", async (req, res) => {
             imgUrl = "https://s3.amazonaws.com/theoatmeal-img/books/404_not_found.png";
         }
 
-        await db.query(
+        await pool.query(
             "INSERT INTO authors (author) VALUES ($1) ON CONFLICT (author) DO NOTHING;",
         [author]);
 
-        const result = await db.query(
+        const result = await pool.query(
             "SELECT id FROM authors WHERE author = $1",
         [author]);
         const author_id = result.rows[0].id;
 
-        await db.query(
+        await pool.query(
             "INSERT INTO books (isbn, name, date, rate, note, author_id, img_url) VALUES ($1, $2, $3, $4, $5, $6, $7);",
         [isbn, name, date, rate, note, author_id, imgUrl]);
         res.redirect("/");
@@ -114,7 +108,7 @@ app.get("/book", async (req, res) => {
     `;
 
     try {
-        const result = await db.query(query);
+        const result = await pool.query(query);
         const books = result.rows;
         const isbn = books[0].isbn;
         const response = await axios.get(`https://covers.openlibrary.org/b/isbn/${isbn}.json`);
@@ -122,7 +116,7 @@ app.get("/book", async (req, res) => {
 
         res.render("book.ejs", { book: books[0], olid: olid });
     } catch (error) {
-        const result = await db.query(query);
+        const result = await pool.query(query);
         const books = result.rows;
 
         res.render("book.ejs", { book: books[0] });
@@ -140,7 +134,7 @@ app.get("/edit", async (req, res) => {
     `;
 
     try {
-        const result = await db.query(query);
+        const result = await pool.query(query);
         const books = result.rows;
         const book = books[0];
         const date = book.date;
@@ -172,7 +166,7 @@ app.get("/delete", async (req, res) => {
     `;
 
     try {
-        const result = await db.query(query);
+        const result = await pool.query(query);
         res.redirect("/");
     } catch (error) {
         console.error('Error executing query', error.stack);
@@ -193,7 +187,7 @@ app.post("/update", async (req, res) => {
     `;
 
     try {
-        const result = await db.query(query, [date, rate, note, id]);
+        const result = await pool.query(query, [date, rate, note, id]);
         const books = result.rows;
         const book = books[0];
         res.redirect("/");
